@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "security-scanner": {
+      "url": "http://localhost:8765/sse",
+      "description": "Security scanning — Checkov, Semgrep, Bandit, ASH"
+    }
+  }
+}
