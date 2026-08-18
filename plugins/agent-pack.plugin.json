@@ -1,0 +1,16 @@
+{
+  "$schema": "https://tstack.dev/schemas/agent-plugin.schema.json",
+  "name": "agent-pack",
+  "version": "2.1.0",
+  "description": "Enterprise-safe agent skills, agents, workflows, adapters, tool providers, stacks, domains, and profiles for agent-registry and agent-harness.",
+  "registry": "./registry.json",
+  "skills": "./skills",
+  "source": {
+    "repository": "https://github.com/TimothyNguyen/tstack",
+    "subfolder": "agent-pack"
+  },
+  "consumers": {
+    "registry": "agent-registry",
+    "harness": "agent-harness"
+  }
+}
