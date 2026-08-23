@@ -1,0 +1,17 @@
+apiVersion: registry.agentify/v1alpha1
+kind: MCPServer
+metadata:
+  name: diagram-design-mcp
+  namespace: default
+  tag: latest
+spec:
+  title: "diagram-design-mcp"
+  description: "Local stdio MCP adapter for diagram-design type guidance, source extraction, and HTML validation."
+  source:
+    package:
+      origin:
+        type: pypi
+        identifier: diagram-design-mcp
+        pypi:
+          version: "0.1.0"
+          server_name: diagram-design-mcp

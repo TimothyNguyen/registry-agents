@@ -11,8 +11,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_DIR = ROOT / "manifests"
 OUTPUT = MANIFEST_DIR / "core.yaml"
+RESOURCE_DIR = MANIFEST_DIR / "resources"
 
-AGENTS = ("swe", "spec-agent", "security", "qa-agent", "orchestrate")
+AGENTS = ("swe", "spec-agent", "security", "qa-agent", "orchestrate", "diagram-design")
 SKILLS = (
     "using-agent-skills",
     "systematic-debugging",
@@ -20,6 +21,9 @@ SKILLS = (
     "review",
     "verification-before-completion",
     "commit",
+    "book-to-skill",
+    "context-saver",
+    "diagram-design",
 )
 
 
@@ -120,9 +124,35 @@ def build() -> str:
     documents.append(
         _document(
             "MCPServer",
+            "github-mcp",
+            "github-mcp",
+            "GitHub MCP server for repository, issue, pull request, Actions, and security workflows.",
+            [
+                "  remote:",
+                "    type: http",
+                "    url: https://api.githubcopilot.com/mcp/",
+            ],
+        )
+    )
+    documents.append(
+        _document(
+            "MCPServer",
+            "figma-mcp",
+            "figma-mcp",
+            "Figma MCP server for design context, code generation, and design-system workflows.",
+            [
+                "  remote:",
+                "    type: http",
+                "    url: https://mcp.figma.com/mcp",
+            ],
+        )
+    )
+    documents.append(
+        _document(
+            "MCPServer",
             "drawio-mcp",
             "drawio-mcp",
-            "Draw.io MCP server for opening XML, CSV, and Mermaid diagrams.",
+            "Local Draw.io-compatible MCP server for opening XML, CSV, and Mermaid diagrams.",
             [
                 "  source:",
                 "    package:",
@@ -139,6 +169,24 @@ def build() -> str:
             ],
         )
     )
+    documents.append(
+        _document(
+            "MCPServer",
+            "diagram-design-mcp",
+            "diagram-design-mcp",
+            "Local stdio MCP adapter for diagram-design type guidance, source extraction, and HTML validation.",
+            [
+                "  source:",
+                "    package:",
+                "      origin:",
+                "        type: pypi",
+                "        identifier: diagram-design-mcp",
+                "        pypi:",
+                "          version: \"0.1.0\"",
+                "          server_name: diagram-design-mcp",
+            ],
+        )
+    )
 
     documents.append(
         _document(
@@ -150,6 +198,7 @@ def build() -> str:
                 "  harnesses:",
                 "    - claude",
                 "    - codex",
+                "    - copilot",
                 "  source:",
                 "    type: git",
                 "    git:",
@@ -164,9 +213,59 @@ def build() -> str:
     return "\n---\n".join("\n".join(document) for document in documents) + "\n"
 
 
+def _split_documents(rendered: str) -> dict[Path, str]:
+    """Map each generated registry document to an independently applicable file."""
+    result: dict[Path, str] = {}
+    for document in rendered.rstrip("\n").split("\n---\n"):
+        kind_match = re.search(r"^kind: ([A-Za-z]+)$", document, re.MULTILINE)
+        name_match = re.search(r"^  name: ([A-Za-z0-9._-]+)$", document, re.MULTILINE)
+        if not kind_match or not name_match:
+            raise ValueError("generated document missing kind or metadata.name")
+        kind = kind_match.group(1)
+        plural = {
+            "Agent": "agents",
+            "Skill": "skills",
+            "MCPServer": "mcp-servers",
+            "Plugin": "plugins",
+        }.get(kind)
+        if plural is None:
+            raise ValueError(f"unsupported generated kind: {kind}")
+        result[RESOURCE_DIR / plural / f"{name_match.group(1)}.yaml"] = document + "\n"
+    return result
+
+
+def _write_split_documents(rendered: str, *, check: bool) -> int:
+    expected = _split_documents(rendered)
+    existing = set(RESOURCE_DIR.glob("**/*.yaml")) if RESOURCE_DIR.exists() else set()
+    stale = existing - set(expected)
+    if check:
+        for path, content in expected.items():
+            if not path.exists() or path.read_text(encoding="utf-8") != content:
+                print(f"stale: {path}")
+                return 1
+        if stale:
+            print(f"stale: {sorted(stale)[0]}")
+            return 1
+        print(f"ok: {RESOURCE_DIR} ({len(expected)} resources)")
+        return 0
+
+    for path, content in expected.items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8", newline="\n")
+    for path in stale:
+        path.unlink()
+    print(f"wrote: {RESOURCE_DIR} ({len(expected)} resources)")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true", help="fail when generated output is stale")
+    parser.add_argument(
+        "--split",
+        action="store_true",
+        help="also write one independently applicable YAML manifest per resource",
+    )
     args = parser.parse_args()
     rendered = build()
     if args.check:
@@ -175,11 +274,13 @@ def main() -> int:
             print(f"stale: {OUTPUT}")
             return 1
         print(f"ok: {OUTPUT}")
-        return 0
+        return _write_split_documents(rendered, check=True)
     MANIFEST_DIR.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(rendered, encoding="utf-8", newline="\n")
     resource_count = rendered.count("\n---\n") + 1
     print(f"wrote: {OUTPUT} ({resource_count} resources)")
+    if args.split:
+        return _write_split_documents(rendered, check=False)
     return 0
 
 

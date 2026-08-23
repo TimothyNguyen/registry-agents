@@ -1,0 +1,12 @@
+apiVersion: registry.agentify/v1alpha1
+kind: MCPServer
+metadata:
+  name: github-mcp
+  namespace: default
+  tag: latest
+spec:
+  title: "github-mcp"
+  description: "GitHub MCP server for repository, issue, pull request, Actions, and security workflows."
+  remote:
+    type: http
+    url: https://api.githubcopilot.com/mcp/

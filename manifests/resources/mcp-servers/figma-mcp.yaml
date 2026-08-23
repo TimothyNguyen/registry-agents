@@ -1,0 +1,12 @@
+apiVersion: registry.agentify/v1alpha1
+kind: MCPServer
+metadata:
+  name: figma-mcp
+  namespace: default
+  tag: latest
+spec:
+  title: "figma-mcp"
+  description: "Figma MCP server for design context, code generation, and design-system workflows."
+  remote:
+    type: http
+    url: https://mcp.figma.com/mcp

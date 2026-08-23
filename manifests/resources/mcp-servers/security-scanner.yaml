@@ -1,0 +1,12 @@
+apiVersion: registry.agentify/v1alpha1
+kind: MCPServer
+metadata:
+  name: security-scanner
+  namespace: default
+  tag: latest
+spec:
+  title: "security-scanner"
+  description: "Checkov, Semgrep, Bandit, and ASH security scanning MCP server."
+  remote:
+    type: sse
+    url: http://localhost:8765/sse

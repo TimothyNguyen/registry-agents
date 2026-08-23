@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "github-mcp": {
+      "url": "https://api.githubcopilot.com/mcp/",
+      "description": "GitHub repositories, issues, pull requests, Actions, Dependabot, and security workflows",
+      "toolsets": [
+        "repos",
+        "issues",
+        "pull_requests",
+        "actions",
+        "code_security",
+        "dependabot"
+      ],
+      "readOnlyByDefault": true
+    }
+  }
+}

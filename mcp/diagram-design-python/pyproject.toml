@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "diagram-design-mcp"
+version = "0.1.0"
+description = "Dependency-free MCP adapter for the diagram-design skill."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["mcp", "diagrams", "svg", "drawio", "mermaid"]
+
+[project.scripts]
+diagram-design-mcp = "diagram_design_mcp.server:main"
+
+[tool.setuptools]
+packages = ["diagram_design_mcp"]
