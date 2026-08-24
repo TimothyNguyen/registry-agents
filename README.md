@@ -15,8 +15,8 @@ Contents:
 From this directory:
 
 ```powershell
-python scripts/build_manifests.py --split
-python scripts/build_manifests.py --check
+py scripts/build_manifests.py --split
+py scripts/build_manifests.py --check
 
 # Apply one resource at a time.
 tregistry apply -f manifests/resources/agents/swe.yaml
@@ -27,10 +27,10 @@ tregistry apply -f manifests/resources/mcp-servers/figma-mcp.yaml
 # Or apply complete catalog payload.
 tregistry apply -f manifests/core.yaml --dry-run
 tregistry apply -f manifests/core.yaml
-uv run tregistry get agents
-uv run tregistry get skills
-uv run tregistry get mcp-servers
-uv run tregistry get plugins
+tregistry get agents
+tregistry get skills
+tregistry get mcp-servers
+tregistry get plugins
 ```
 
 Open tregistry frontend after apply. Catalog rows should show 6 agents, 9 skills, 5 MCP servers, and 1 plugin in `default/latest`.
@@ -39,13 +39,43 @@ Open tregistry frontend after apply. Catalog rows should show 6 agents, 9 skills
 agent, skill, MCP server, and plugin. This keeps installation, rollback, and
 verification separate by resource.
 
+## Install skills independently
+
+`scripts/skill_workflow.py` discovers every file in
+`manifests/resources/skills/`; it does not maintain a second hardcoded skill
+list. It validates each manifest's `SKILL.md` body, then can apply and install
+each skill as its own tregistry operation.
+
+```powershell
+# Validate every discovered skill without registry writes.
+py scripts/skill_workflow.py
+
+# Validate every registry apply without writing catalog state.
+py scripts/skill_workflow.py --dry-run
+
+# Print exact commands for one skill.
+py scripts/skill_workflow.py --install --print-commands --skill test --target claude --scope global
+
+# Apply and install one skill independently.
+py scripts/skill_workflow.py --install --skill test --target claude --scope global
+
+# Apply and install every discovered skill independently.
+py scripts/skill_workflow.py --install --target claude --scope global
+```
+
+Use `--skill <name>` repeatedly to select several skills. Replace `test` with
+any filename stem under `manifests/resources/skills/`. Current tregistry skill
+installation targets Claude; Codex currently supports MCP installation, not a
+skills directory. To use another tregistry executable, set
+`TREGISTRY_COMMAND` or pass `--tregistry-command`.
+
 ## Rebuild check
 
 `manifests/core.yaml` is generated. Update payload files first, then run:
 
 ```powershell
-python scripts/build_manifests.py
-python scripts/build_manifests.py --check
+py scripts/build_manifests.py
+py scripts/build_manifests.py --check
 ```
 
 ## Compatibility boundary
