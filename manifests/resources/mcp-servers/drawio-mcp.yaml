@@ -1,0 +1,21 @@
+apiVersion: registry.agentify/v1alpha1
+kind: MCPServer
+metadata:
+  name: drawio-mcp
+  namespace: default
+  tag: latest
+spec:
+  title: "drawio-mcp"
+  description: "Local Draw.io-compatible MCP server for opening XML, CSV, and Mermaid diagrams."
+  source:
+    package:
+      origin:
+        type: pypi
+        identifier: drawio-mcp
+        pypi:
+          version: "2.0.0"
+          server_name: drawio-mcp
+      launch:
+        command: drawio-mcp
+      transport:
+        type: stdio

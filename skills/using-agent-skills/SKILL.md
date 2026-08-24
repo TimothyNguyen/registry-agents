@@ -42,11 +42,11 @@ This is not negotiable. This is not optional. You cannot rationalize your way ou
 
 agent-pack skills enhance default system behavior, but **user instructions always take precedence**:
 
-1. **User's explicit instructions** (CLAUDE.md, GEMINI.md, AGENTS.md, direct requests) — highest priority
+1. **User's explicit instructions** (CLAUDE.md, AGENTS.md, direct requests) — highest priority
 2. **agent-pack skills** — enhance default system behavior where they apply
 3. **Default system prompt** — lowest priority
 
-If CLAUDE.md, GEMINI.md, or AGENTS.md says "don't use TDD" and a skill says "always use TDD," follow the user's instructions. The user is in control.
+If CLAUDE.md or AGENTS.md says "don't use TDD" and a skill says "always use TDD," follow the user's instructions. The user is in control.
 
 ## How to Access Skills
 
@@ -57,8 +57,6 @@ If CLAUDE.md, GEMINI.md, or AGENTS.md says "don't use TDD" and a skill says "alw
 **In Codex:** Skills load natively. Follow the instructions presented when a skill activates.
 
 **In Copilot CLI:** Use the `skill` tool. Skills are auto-discovered from installed plugins.
-
-**In Gemini CLI:** Skills activate via the `activate_skill` tool. Gemini loads skill metadata at session start and activates the full content on demand.
 
 **In other environments:** Check your platform's documentation for how skills are loaded.
 

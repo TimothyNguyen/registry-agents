@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "figma-mcp": {
+      "url": "https://mcp.figma.com/mcp",
+      "description": "Figma design context, code generation, design-system, and canvas workflows",
+      "readOnlyByDefault": true
+    },
+    "figma-mcp-desktop": {
+      "url": "http://127.0.0.1:3845/mcp",
+      "description": "Local Figma Desktop MCP endpoint for organization and enterprise use cases",
+      "readOnlyByDefault": true
+    }
+  }
+}

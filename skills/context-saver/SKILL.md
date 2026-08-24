@@ -1,0 +1,85 @@
+---
+name: context-saver
+version: 0.1.0
+description: |
+  Reduce command output with an RTK-backed Python adapter and compact prose locally.
+---
+
+# Context saver
+
+Use this skill when prose context is large and repetitive. It compacts prose before it enters agent context. It does not compress prompts, model reasoning, or billing directly.
+
+## Support boundary
+
+Supported host integrations:
+
+- GitHub Copilot CLI
+- Claude Code
+- Codex
+
+No other host integration is part of this skill.
+
+Host setup commands:
+
+```text
+copilot -> context-saver-rtk init -g --copilot
+claude  -> context-saver-rtk init -g
+codex   -> context-saver-rtk init -g --codex
+```
+
+## RTK command output
+
+Install RTK separately, then verify it:
+
+```powershell
+python skills/context-saver/rtk_adapter.py check
+```
+
+Configure host:
+
+```powershell
+python skills/context-saver/rtk_adapter.py init --host codex
+```
+
+Route safe common commands through RTK:
+
+```powershell
+python skills/context-saver/rtk_adapter.py run -- git status
+python skills/context-saver/rtk_adapter.py run -- pytest -q
+python skills/context-saver/rtk_adapter.py run -- ruff check .
+```
+
+User-facing binary name `context-saver-rtk`; upstream `rtk.exe` stays installed for compatibility. Unknown commands and risky flag combinations pass through natively. Missing RTK triggers native fallback.
+
+## Compact prose
+
+Compact a file:
+
+```powershell
+python skills/context-saver/context_saver.py compact --mode full notes.md
+```
+
+Compact stdin:
+
+```powershell
+Get-Content notes.md | python skills/context-saver/context_saver.py compact --mode ultra
+```
+
+Modes:
+
+- `lite`: collapse whitespace.
+- `full`: remove filler, articles, and auxiliary verbs.
+- `ultra`: also use compact symbols such as `→` and `&`.
+
+Fenced code, command lines, URLs, quoted strings, and error lines stay exact.
+
+No external package, proxy, MCP server, engine, or network dependency required.
+
+## Verify
+
+```powershell
+python -m unittest discover -s skills/context-saver/tests -p "test_*.py"
+python scripts/build_manifests.py --check
+```
+
+The registry embeds Markdown bodies. Keep `context_saver.py` and `rtk_adapter.py` beside this skill in source distributions.

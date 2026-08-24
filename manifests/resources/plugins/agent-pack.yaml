@@ -1,0 +1,20 @@
+apiVersion: registry.agentify/v1alpha1
+kind: Plugin
+metadata:
+  name: agent-pack
+  namespace: default
+  tag: latest
+spec:
+  title: "agent-pack"
+  description: "Enterprise-safe agent skills, agents, workflows, adapters, and tool providers."
+  harnesses:
+    - claude
+    - codex
+    - copilot
+  source:
+    type: git
+    git:
+      repository:
+        url: https://github.com/TimothyNguyen/tstack
+        branch: main
+        subfolder: agent-pack
